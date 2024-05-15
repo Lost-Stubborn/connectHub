@@ -1,0 +1,9 @@
+DELIMITER //
+CREATE TRIGGER notification_follow
+AFTER INSERT
+on follow_data
+FOR EACH ROW
+BEGIN
+	INSERT INTO notifications (notification_for, notification_type, notification_by) VALUES (NEW.following, 'FOLLOW', NEW.follower);
+END //
+DELIMITER ;

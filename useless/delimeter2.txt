@@ -1,0 +1,21 @@
+DELIMITER //
+CREATE PROCEDURE toggleUserFollow
+(
+	IN myusername VARCHAR(30),
+	IN targetusername VARCHAR(30),
+	OUT state INT
+)
+BEGIN
+	DECLARE e INT;
+
+	SELECT COUNT(*) INTO e FROM follow_data WHERE follower = (SELECT user_id FROM user_credentials WHERE username = myusername) AND following = (SELECT user_id FROM user_credentials WHERE username = targetusername);
+
+	IF e = 1 THEN
+		DELETE FROM follow_data WHERE follower = (SELECT user_id FROM user_credentials WHERE username = myusername) AND following = (SELECT user_id FROM user_credentials WHERE username = targetusername);
+		SET state = 0;
+	ELSE
+		INSERT INTO follow_data (following, follower) VALUES ((SELECT user_id FROM user_credentials WHERE username = targetusername), (SELECT user_id FROM user_credentials WHERE username = myusername));
+		SET state = 1;
+	END IF;
+END //
+DELIMITER ;

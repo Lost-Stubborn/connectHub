@@ -1,0 +1,21 @@
+DELIMITER //
+CREATE PROCEDURE togglelike
+(
+	IN pid INT,
+	IN u VARCHAR(30),
+	OUT res INT
+)
+BEGIN
+	DECLARE e INT DEFAULT 0;
+
+	SELECT COUNT(*) INTO e FROM post_likes WHERE post_id = pid AND liked_by = (SELECT user_id FROM user_credentials WHERE username = u);
+
+	IF e = 1 THEN
+		DELETE FROM post_likes WHERE post_id = pid AND liked_by = (SELECT user_id FROM user_credentials WHERE username = u);
+		SET res = 0;
+	ELSE
+		INSERT INTO post_likes VALUES (pid, (SELECT user_id FROM user_credentials WHERE username = u));
+		SET res = 1;
+	END IF;
+END //
+DELIMITER ;
